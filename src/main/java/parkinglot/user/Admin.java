@@ -1,22 +1,30 @@
 package parkinglot.user;
 
-public class Admin extends Customer {
-    private String role;
+import parkinglot.core.User;
+import parkinglot.core.Notifiable;
 
+public class Admin extends User implements Notifiable {
     // Constructor
-    public Admin(String name, String contactInfo, String role) {
-        super(name, contactInfo);
-        this.role = role;
+    public Admin(String name) {
+        super(name, "Admin"); // Gọi constructor của lớp cha với `super`
     }
 
-    // Getter cho role
-    public String getRole() {
-        return role;
-    }
-
-    // Override phương thức toString để hiển thị thông tin quản trị viên
     @Override
-    public String toString() {
-        return "Admin{name='" + getName() + "', contactInfo='" + getContactInfo() + "', role='" + role + "'}";
+    public void displayRole() {
+        System.out.println("Role: " + this.role);
+    }
+
+    @Override
+    public void sendNotification(String message) {
+        System.out.println("Admin Notification: " + message);
+    }
+
+    // Phương thức quá tải (overloading)
+    public final void generateReport(String reportType) { // Phương thức `final` không thể ghi đè
+        System.out.println("Generating report: " + reportType);
+    }
+
+    public final void generateReport() { // Phương thức `final` không thể ghi đè
+        System.out.println("Generating default report.");
     }
 }

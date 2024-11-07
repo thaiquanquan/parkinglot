@@ -13,6 +13,9 @@ import parkinglot.core.ParkingAttendant;
 import parkinglot.transaction.Transaction;
 import java.util.Date;
 import parkinglot.notification.Notification;
+import parkinglot.gui.UserScreen;
+import parkinglot.gui.AdminScreen;
+
 
 /**
  *
@@ -58,6 +61,8 @@ public class MainScreen extends javax.swing.JFrame {
         calculateChargesButton = new javax.swing.JButton();
         sendNotificationButton = new javax.swing.JButton();
         viewAttendantInfoButton = new javax.swing.JButton();
+        btnUserInterface = new javax.swing.JButton();
+        btnAdminInterface = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -133,6 +138,20 @@ public class MainScreen extends javax.swing.JFrame {
             }
         });
 
+        btnUserInterface.setText("User Interface");
+        btnUserInterface.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnUserInterfaceActionPerformed(evt);
+            }
+        });
+
+        btnAdminInterface.setText("Admin Interface");
+        btnAdminInterface.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnAdminInterfaceActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -141,15 +160,15 @@ public class MainScreen extends javax.swing.JFrame {
                 .addGap(25, 25, 25)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(viewAttendantInfoButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                        .addComponent(releaseButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(reserveButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(checkAvailabilityButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                    .addComponent(releaseButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(reserveButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(checkAvailabilityButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addGap(59, 59, 59)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(titleLabel)
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                            .addComponent(btnUserInterface, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(generateReportButton, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(viewTransactionButton, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(addCustomerButton, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
@@ -157,7 +176,8 @@ public class MainScreen extends javax.swing.JFrame {
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(exitButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(calculateChargesButton, javax.swing.GroupLayout.DEFAULT_SIZE, 142, Short.MAX_VALUE)
-                            .addComponent(sendNotificationButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                            .addComponent(sendNotificationButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(btnAdminInterface, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
                 .addContainerGap(45, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
@@ -180,9 +200,12 @@ public class MainScreen extends javax.swing.JFrame {
                     .addComponent(reserveButton)
                     .addComponent(generateReportButton)
                     .addComponent(sendNotificationButton))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 47, Short.MAX_VALUE)
-                .addComponent(viewAttendantInfoButton)
-                .addGap(23, 23, 23))
+                .addGap(31, 31, 31)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(viewAttendantInfoButton)
+                    .addComponent(btnUserInterface)
+                    .addComponent(btnAdminInterface))
+                .addContainerGap(39, Short.MAX_VALUE))
         );
 
         pack();
@@ -325,6 +348,21 @@ public class MainScreen extends javax.swing.JFrame {
         JOptionPane.showMessageDialog(this, "Attendant Information: " + attendants);
     }//GEN-LAST:event_viewAttendantInfoButtonActionPerformed
 
+    private void btnUserInterfaceActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUserInterfaceActionPerformed
+         new UserScreen(); // Mở giao diện người dùng
+         dispose(); // Đóng MainScreen
+    }//GEN-LAST:event_btnUserInterfaceActionPerformed
+
+    private void btnAdminInterfaceActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAdminInterfaceActionPerformed
+        String password = JOptionPane.showInputDialog("Enter admin password:");
+        if ("admin123".equals(password)) { // Kiểm tra mật khẩu
+            new AdminScreen(); // Mở giao diện quản trị viên
+            dispose(); // Đóng MainScreen
+        } else {
+            JOptionPane.showMessageDialog(this, "Invalid password!");
+        }
+    }//GEN-LAST:event_btnAdminInterfaceActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -362,6 +400,8 @@ public class MainScreen extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton addCustomerButton;
+    private javax.swing.JButton btnAdminInterface;
+    private javax.swing.JButton btnUserInterface;
     private javax.swing.JButton calculateChargesButton;
     private javax.swing.JButton checkAvailabilityButton;
     private javax.swing.JButton exitButton;

@@ -27,17 +27,16 @@
               <EmptySpace min="-2" pref="25" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" max="-2" attributes="0">
                   <Component id="viewAttendantInfoButton" max="32767" attributes="0"/>
-                  <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                      <Component id="releaseButton" max="32767" attributes="0"/>
-                      <Component id="reserveButton" max="32767" attributes="0"/>
-                      <Component id="checkAvailabilityButton" alignment="0" max="32767" attributes="0"/>
-                  </Group>
+                  <Component id="releaseButton" max="32767" attributes="0"/>
+                  <Component id="reserveButton" max="32767" attributes="0"/>
+                  <Component id="checkAvailabilityButton" alignment="0" max="32767" attributes="0"/>
               </Group>
               <EmptySpace min="-2" pref="59" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
                   <Component id="titleLabel" min="-2" max="-2" attributes="0"/>
                   <Group type="102" alignment="0" attributes="0">
                       <Group type="103" groupAlignment="1" max="-2" attributes="0">
+                          <Component id="btnUserInterface" alignment="0" max="32767" attributes="0"/>
                           <Component id="generateReportButton" alignment="0" max="32767" attributes="0"/>
                           <Component id="viewTransactionButton" alignment="0" max="32767" attributes="0"/>
                           <Component id="addCustomerButton" alignment="0" max="32767" attributes="0"/>
@@ -47,6 +46,7 @@
                           <Component id="exitButton" max="32767" attributes="0"/>
                           <Component id="calculateChargesButton" pref="142" max="32767" attributes="0"/>
                           <Component id="sendNotificationButton" alignment="0" max="32767" attributes="0"/>
+                          <Component id="btnAdminInterface" alignment="0" max="32767" attributes="0"/>
                       </Group>
                   </Group>
               </Group>
@@ -77,9 +77,13 @@
                   <Component id="generateReportButton" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="sendNotificationButton" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
-              <EmptySpace pref="47" max="32767" attributes="0"/>
-              <Component id="viewAttendantInfoButton" min="-2" max="-2" attributes="0"/>
-              <EmptySpace min="-2" pref="23" max="-2" attributes="0"/>
+              <EmptySpace min="-2" pref="31" max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="3" attributes="0">
+                  <Component id="viewAttendantInfoButton" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="btnUserInterface" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="btnAdminInterface" alignment="3" min="-2" max="-2" attributes="0"/>
+              </Group>
+              <EmptySpace pref="39" max="32767" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -168,6 +172,22 @@
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="viewAttendantInfoButtonActionPerformed"/>
+      </Events>
+    </Component>
+    <Component class="javax.swing.JButton" name="btnUserInterface">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="User Interface"/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnUserInterfaceActionPerformed"/>
+      </Events>
+    </Component>
+    <Component class="javax.swing.JButton" name="btnAdminInterface">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Admin Interface"/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnAdminInterfaceActionPerformed"/>
       </Events>
     </Component>
   </SubComponents>
