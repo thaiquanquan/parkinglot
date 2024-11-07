@@ -4,18 +4,22 @@
  */
 package parkinglot.gui;
 import javax.swing.JOptionPane;
+import parkinglot.service.UserService;
+import parkinglot.core.User;
 
 /**
  *
  * @author Maxsys
  */
 public class LoginScreen extends javax.swing.JFrame {
+     private UserService userService; // Khai báo đối tượng UserService
 
     /**
      * Creates new form LoginScreen
      */
     public LoginScreen() {
         initComponents();
+          userService = new UserService(); // Khởi tạo UserService
     }
 
     /**
@@ -85,23 +89,32 @@ public class LoginScreen extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void loginButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loginButtonActionPerformed
- // Get the username and password entered by the user
+        // Lấy username và password người dùng nhập vào
     String username = usernameTextField.getText();
     String password = new String(passwordField.getPassword());
 
-    // Check if the entered credentials match the expected values
-    if (username.equals("admin") && password.equals("admin123")) {
-        // If credentials are correct, show success message and open the main screen
-        JOptionPane.showMessageDialog(this, "Login Successful");
-        MainScreen mainScreen = new MainScreen();
-        mainScreen.setVisible(true);
-        // Close the login screen
+    // Sử dụng UserService để kiểm tra thông tin đăng nhập
+    User user = userService.login(username, password);
+
+    if (user != null) {
+        // Đăng nhập thành công, xác định vai trò và điều hướng
+        if (user.getRole().equals("Admin") || user.getRole().equals("ParkingAttendant")) {
+            // Nhân viên quản lý và quản trị viên đều được điều hướng đến AdminScreen
+            JOptionPane.showMessageDialog(this, "Login Successful - Admin");
+            AdminScreen adminScreen = new AdminScreen();
+            adminScreen.setVisible(true);
+        } else if (user.getRole().equals("User")) {
+            // Người dùng thông thường thì điều hướng đến UserScreen
+            JOptionPane.showMessageDialog(this, "Login Successful - User");
+            UserScreen userScreen = new UserScreen();
+            userScreen.setVisible(true);
+        }
+        // Đóng màn hình đăng nhập sau khi đăng nhập thành công
         this.dispose();
     } else {
-        // If credentials are incorrect, show error message
+        // Đăng nhập thất bại
         JOptionPane.showMessageDialog(this, "Invalid Username or Password");
     }
-            // TODO add your handling code here:
     }//GEN-LAST:event_loginButtonActionPerformed
 
     /**
