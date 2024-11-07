@@ -3,7 +3,13 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
 package parkinglot.gui;
-import javax.swing.JOptionPane;
+import javax.swing.JOptionPane;    // Để sử dụng JOptionPane cho hộp thoại
+import javax.swing.JPanel;          // Để sử dụng JPanel cho việc gom nhóm các trường nhập liệu
+import javax.swing.JTextField;      // Để sử dụng JTextField cho việc nhập liệu
+import javax.swing.JLabel;          // Để thêm JLabel vào JPanel
+import javax.swing.BoxLayout;       // Để quản lý bố cục của JPanel
+import javax.swing.Box;             // Để thêm khoảng cách giữa các thành phần trong JPanel
+
 /**
  *
  * @author Maxsys
@@ -129,31 +135,113 @@ public class AdminScreen extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnAddCustomerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddCustomerActionPerformed
-        JOptionPane.showMessageDialog(this, "Adding a new customer...");
+          // Tạo JPanel để chứa các trường nhập liệu
+    JPanel panel = new JPanel();
+    panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+
+    // Thêm các thành phần nhập liệu vào panel
+    JTextField txtName = new JTextField(15);
+    JTextField txtPhoneNumber = new JTextField(15);
+    JTextField txtEmail = new JTextField(15);
+
+    panel.add(new JLabel("Customer Name:"));
+    panel.add(txtName);
+    panel.add(Box.createVerticalStrut(10));
+
+    panel.add(new JLabel("Phone Number:"));
+    panel.add(txtPhoneNumber);
+    panel.add(Box.createVerticalStrut(10));
+
+    panel.add(new JLabel("Email:"));
+    panel.add(txtEmail);
+
+    // Hiển thị JOptionPane với JPanel
+    int result = JOptionPane.showConfirmDialog(null, panel, "Add New Customer", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+
+    if (result == JOptionPane.OK_OPTION) {
+        String name = txtName.getText();
+        String phoneNumber = txtPhoneNumber.getText();
+        String email = txtEmail.getText();
+
+        if (name.isEmpty() || phoneNumber.isEmpty() || email.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Please fill all fields before adding the customer.", "Input Error", JOptionPane.ERROR_MESSAGE);
+        } else {
+            // Thêm khách hàng vào danh sách
+            System.out.println("Adding customer: " + name + ", " + phoneNumber + ", " + email);
+        }
+    } else {
+        System.out.println("Add customer action was canceled.");
+    }
     }//GEN-LAST:event_btnAddCustomerActionPerformed
 
     private void btnGenerateReportActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGenerateReportActionPerformed
-       JOptionPane.showMessageDialog(this, "Generating report...");
+       int confirm = JOptionPane.showConfirmDialog(this, "Do you want to generate the report now?", "Generate Report", JOptionPane.YES_NO_OPTION);
+    if (confirm == JOptionPane.YES_OPTION) {
+        // Thực hiện logic tạo báo cáo
+        System.out.println("Generating report...");
+    } else {
+        System.out.println("Report generation was canceled.");
+    }
     }//GEN-LAST:event_btnGenerateReportActionPerformed
 
     private void btnViewTransactionsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnViewTransactionsActionPerformed
-         JOptionPane.showMessageDialog(this, "Viewing transactions...");
+        // Giả sử kiểm tra nếu không có giao dịch nào
+    boolean hasTransactions = false; // Biến giả định cho ví dụ
+
+    if (!hasTransactions) {
+        JOptionPane.showMessageDialog(this, "No transactions available to view.", "View Transactions", JOptionPane.INFORMATION_MESSAGE);
+    } else {
+        // Thực hiện logic xem giao dịch
+        System.out.println("Viewing transactions...");
+    }
     }//GEN-LAST:event_btnViewTransactionsActionPerformed
 
     private void btnReleaseSpotActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnReleaseSpotActionPerformed
-         JOptionPane.showMessageDialog(this, "Releasing spot...");
+          JTextField txtSpotNumber = new JTextField(15);
+    JPanel panel = new JPanel();
+    panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+    panel.add(new JLabel("Spot Number:"));
+    panel.add(txtSpotNumber);
+
+    int result = JOptionPane.showConfirmDialog(null, panel, "Release Parking Spot", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+    if (result == JOptionPane.OK_OPTION) {
+        String spotNumber = txtSpotNumber.getText();
+        if (spotNumber.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Please enter the spot number.", "Input Error", JOptionPane.ERROR_MESSAGE);
+        } else {
+            // Thực hiện logic giải phóng chỗ đỗ
+            System.out.println("Releasing spot number: " + spotNumber);
+        }
+    }
     }//GEN-LAST:event_btnReleaseSpotActionPerformed
 
     private void btnSendNotificationActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSendNotificationActionPerformed
-        JOptionPane.showMessageDialog(this, "Sending notification...");
+         String message = JOptionPane.showInputDialog(this, "Enter the notification message:", "Send Notification", JOptionPane.PLAIN_MESSAGE);
+    if (message != null && !message.trim().isEmpty()) {
+        // Thực hiện logic gửi thông báo
+        System.out.println("Sending notification: " + message);
+    } else if (message != null) {
+        JOptionPane.showMessageDialog(this, "Notification message cannot be empty.", "Input Error", JOptionPane.ERROR_MESSAGE);
+    }
     }//GEN-LAST:event_btnSendNotificationActionPerformed
 
     private void btnViewAttendantInfoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnViewAttendantInfoActionPerformed
-        JOptionPane.showMessageDialog(this, "Viewing attendant information...");
+        // Giả sử không tìm thấy thông tin nhân viên quản lý
+    boolean found = false; // Biến giả định cho ví dụ
+
+    if (!found) {
+        JOptionPane.showMessageDialog(this, "No attendant information available.", "View Attendant Info", JOptionPane.INFORMATION_MESSAGE);
+    } else {
+        // Thực hiện logic xem thông tin nhân viên quản lý
+        System.out.println("Viewing attendant information...");
+    }
     }//GEN-LAST:event_btnViewAttendantInfoActionPerformed
 
     private void btnExitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnExitActionPerformed
-        System.exit(0); // Thoát ứng dụng
+         int confirm = JOptionPane.showConfirmDialog(this, "Are you sure you want to exit?", "Exit", JOptionPane.YES_NO_OPTION);
+    if (confirm == JOptionPane.YES_OPTION) {
+        System.exit(0);
+    }
     }//GEN-LAST:event_btnExitActionPerformed
 
     /**

@@ -27,11 +27,9 @@
               <EmptySpace min="-2" pref="15" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" max="-2" attributes="0">
                   <Component id="btnExit" max="32767" attributes="0"/>
-                  <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                      <Component id="btnAddCustomer" max="32767" attributes="0"/>
-                      <Component id="btnGenerateReport" max="32767" attributes="0"/>
-                      <Component id="btnViewTransactions" max="32767" attributes="0"/>
-                  </Group>
+                  <Component id="btnAddCustomer" max="32767" attributes="0"/>
+                  <Component id="btnGenerateReport" max="32767" attributes="0"/>
+                  <Component id="btnViewTransactions" max="32767" attributes="0"/>
               </Group>
               <EmptySpace min="-2" pref="69" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" max="-2" attributes="0">
