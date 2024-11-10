@@ -6,6 +6,9 @@ package parkinglot.gui;
 import javax.swing.JOptionPane;
 import parkinglot.service.UserService;
 import parkinglot.core.User;
+import parkinglot.core.ParkingLot;
+import parkinglot.transaction.Transaction;
+import java.util.ArrayList;
 
 /**
  *
@@ -13,6 +16,8 @@ import parkinglot.core.User;
  */
 public class LoginScreen extends javax.swing.JFrame {
      private UserService userService; // Khai báo đối tượng UserService
+    private ParkingLot parkingLot;
+    private ArrayList<Transaction> transactions;
 
     /**
      * Creates new form LoginScreen
@@ -20,6 +25,8 @@ public class LoginScreen extends javax.swing.JFrame {
     public LoginScreen() {
         initComponents();
           userService = new UserService(); // Khởi tạo UserService
+        parkingLot = new ParkingLot(10); // Khởi tạo ParkingLot với 10 chỗ đậu xe
+        transactions = new ArrayList<>(); // Khởi tạo danh sách giao dịch
     }
 
     /**
@@ -98,18 +105,21 @@ public class LoginScreen extends javax.swing.JFrame {
 
     if (user != null) {
         // Đăng nhập thành công, xác định vai trò và điều hướng
-        if (user.getRole().equals("Admin") || user.getRole().equals("ParkingAttendant")) {
-            // Nhân viên quản lý và quản trị viên đều được điều hướng đến AdminScreen
-            JOptionPane.showMessageDialog(this, "Login Successful - Admin");
-            AdminScreen adminScreen = new AdminScreen();
-            adminScreen.setVisible(true);
-        } else if (user.getRole().equals("User")) {
-            // Người dùng thông thường thì điều hướng đến UserScreen
-            JOptionPane.showMessageDialog(this, "Login Successful - User");
-            UserScreen userScreen = new UserScreen();
-            userScreen.setVisible(true);
-        }
-        // Đóng màn hình đăng nhập sau khi đăng nhập thành công
+    if (user.getRole().equals("Admin") || user.getRole().equals("ParkingAttendant")) {
+        // Nhân viên quản lý và quản trị viên đều được điều hướng đến AdminScreen
+        JOptionPane.showMessageDialog(this, "Login Successful - Admin");
+        AdminScreen adminScreen = new AdminScreen(parkingLot, transactions); // Khởi tạo AdminScreen
+        adminScreen.setVisible(true);
+    } else if (user.getRole().equals("User")) {
+        // Người dùng thông thường thì điều hướng đến UserScreen
+        JOptionPane.showMessageDialog(this, "Login Successful - User");
+        
+        // Khởi tạo AdminScreen trước khi truyền vào UserScreen
+        AdminScreen adminScreen = new AdminScreen(parkingLot, transactions); 
+        UserScreen userScreen = new UserScreen(parkingLot, transactions, adminScreen);
+        userScreen.setVisible(true);
+    }
+    // Đóng màn hình đăng nhập sau khi đăng nhập thành công
         this.dispose();
     } else {
         // Đăng nhập thất bại

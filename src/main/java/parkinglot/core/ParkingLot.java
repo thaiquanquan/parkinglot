@@ -3,8 +3,11 @@ package parkinglot.core;
 import java.util.ArrayList;
 import java.util.List;
 
+import java.util.HashMap;
+
 public class ParkingLot {
     private List<ParkingSpace> parkingSpaces; // Danh sách các chỗ đỗ xe
+    
 
     // Constructor khởi tạo bãi đỗ với tổng số chỗ
     public ParkingLot(int totalSpaces) {
@@ -48,6 +51,20 @@ public class ParkingLot {
         }
         return false;
     }
+   public boolean cancelReservation(String vehicleNumber) {
+    for (ParkingSpace space : parkingSpaces) {
+        if (space.getVehicle() != null) {
+            System.out.println("Checking space ID: " + space.getId() + " with vehicle number: " + space.getVehicle().getLicensePlate());
+            if (space.getVehicle().getLicensePlate().equals(vehicleNumber)) {
+                space.setAvailable(true);
+                space.setVehicle(null); // Bỏ thông tin phương tiện
+                return true;
+            }
+        }
+    }
+    return false; // Nếu không tìm thấy chỗ đỗ nào của phương tiện đó
+}
+
 
     // Lấy thông tin chỗ đỗ
     public ParkingSpace getParkingSpace(int spaceId) {

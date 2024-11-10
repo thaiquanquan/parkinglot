@@ -3,25 +3,43 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
 package parkinglot.gui;
-import javax.swing.JOptionPane;    // Để sử dụng JOptionPane cho hộp thoại
-import javax.swing.JPanel;          // Để sử dụng JPanel cho việc gom nhóm các trường nhập liệu
-import javax.swing.JTextField;      // Để sử dụng JTextField cho việc nhập liệu
-import javax.swing.JLabel;          // Để thêm JLabel vào JPanel
-import javax.swing.BoxLayout;       // Để quản lý bố cục của JPanel
-import javax.swing.Box;             // Để thêm khoảng cách giữa các thành phần trong JPanel
+import java.util.ArrayList;
+import java.util.Date;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+import javax.swing.JLabel;
+import javax.swing.BoxLayout;
+import javax.swing.Box;
+import parkinglot.transaction.Transaction;
+import parkinglot.core.ParkingLot;
+import parkinglot.core.User;
 
 /**
  *
  * @author Maxsys
  */
 public class AdminScreen extends javax.swing.JFrame {
+    private ArrayList<Transaction> transactions;
+    private ParkingLot parkingLot;
+    private ArrayList<User> users;
+    private UserScreen userScreen; // Tham chiếu đến UserScreen
+
 
     /**
      * Creates new form AdminScreen
      */
-    public AdminScreen() {
+    public void updateParkingStatus(String licensePlate, String status) {
+    // Ví dụ: Cập nhật trạng thái trong giao diện hoặc thông báo
+    System.out.println("Vehicle " + licensePlate + " has been updated to status: " + status);
+}
+
+    public AdminScreen(ParkingLot parkingLot, ArrayList<Transaction> transactions) {
+       this.parkingLot = parkingLot;
+        this.transactions = transactions;
+        this.users = new ArrayList<>();
         initComponents();
-        this.setVisible(true); // Đảm bảo giao diện được hiển thị
+        this.setVisible(true); // Ensure the UI is displayed
     }
 
     /**
@@ -97,151 +115,148 @@ public class AdminScreen extends javax.swing.JFrame {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(15, 15, 15)
+                .addGap(22, 22, 22)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(btnExit, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                         .addComponent(btnAddCustomer, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(btnGenerateReport, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(btnViewTransactions, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-                .addGap(69, 69, 69)
+                .addGap(54, 54, 54)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(btnReleaseSpot, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(btnSendNotification, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(btnViewAttendantInfo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap(50, Short.MAX_VALUE))
+                .addContainerGap(66, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(23, 23, 23)
+                .addGap(25, 25, 25)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(btnReleaseSpot, javax.swing.GroupLayout.DEFAULT_SIZE, 34, Short.MAX_VALUE)
+                    .addComponent(btnReleaseSpot, javax.swing.GroupLayout.DEFAULT_SIZE, 33, Short.MAX_VALUE)
                     .addComponent(btnAddCustomer, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addGap(56, 56, 56)
+                .addGap(46, 46, 46)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(btnSendNotification, javax.swing.GroupLayout.DEFAULT_SIZE, 35, Short.MAX_VALUE)
+                    .addComponent(btnSendNotification, javax.swing.GroupLayout.DEFAULT_SIZE, 32, Short.MAX_VALUE)
                     .addComponent(btnGenerateReport, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addGap(53, 53, 53)
+                .addGap(45, 45, 45)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(btnViewTransactions, javax.swing.GroupLayout.DEFAULT_SIZE, 32, Short.MAX_VALUE)
                     .addComponent(btnViewAttendantInfo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addGap(42, 42, 42)
-                .addComponent(btnExit, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(38, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 41, Short.MAX_VALUE)
+                .addComponent(btnExit, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(14, 14, 14))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnAddCustomerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddCustomerActionPerformed
-          // Tạo JPanel để chứa các trường nhập liệu
-    JPanel panel = new JPanel();
-    panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+         JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 
-    // Thêm các thành phần nhập liệu vào panel
-    JTextField txtName = new JTextField(15);
-    JTextField txtPhoneNumber = new JTextField(15);
-    JTextField txtEmail = new JTextField(15);
+        JTextField txtName = new JTextField(15);
+        JTextField txtPhoneNumber = new JTextField(15);
+        JTextField txtEmail = new JTextField(15);
 
-    panel.add(new JLabel("Customer Name:"));
-    panel.add(txtName);
-    panel.add(Box.createVerticalStrut(10));
+        panel.add(new JLabel("Customer Name:"));
+        panel.add(txtName);
+        panel.add(Box.createVerticalStrut(10));
 
-    panel.add(new JLabel("Phone Number:"));
-    panel.add(txtPhoneNumber);
-    panel.add(Box.createVerticalStrut(10));
+        panel.add(new JLabel("Phone Number:"));
+        panel.add(txtPhoneNumber);
+        panel.add(Box.createVerticalStrut(10));
 
-    panel.add(new JLabel("Email:"));
-    panel.add(txtEmail);
+        panel.add(new JLabel("Email:"));
+        panel.add(txtEmail);
 
-    // Hiển thị JOptionPane với JPanel
-    int result = JOptionPane.showConfirmDialog(null, panel, "Add New Customer", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+        int result = JOptionPane.showConfirmDialog(this, panel, "Add New Customer", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
 
-    if (result == JOptionPane.OK_OPTION) {
-        String name = txtName.getText();
-        String phoneNumber = txtPhoneNumber.getText();
-        String email = txtEmail.getText();
+        if (result == JOptionPane.OK_OPTION) {
+            String name = txtName.getText();
+            String phoneNumber = txtPhoneNumber.getText();
+            String email = txtEmail.getText();
 
-        if (name.isEmpty() || phoneNumber.isEmpty() || email.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Please fill all fields before adding the customer.", "Input Error", JOptionPane.ERROR_MESSAGE);
+            if (name.isEmpty() || phoneNumber.isEmpty() || email.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Please fill all fields before adding the customer.", "Input Error", JOptionPane.ERROR_MESSAGE);
+            } else {
+                User newUser = new User(name, phoneNumber, email);
+                users.add(newUser);
+                JOptionPane.showMessageDialog(this, "Customer added successfully: " + name);
+            }
         } else {
-            // Thêm khách hàng vào danh sách
-            System.out.println("Adding customer: " + name + ", " + phoneNumber + ", " + email);
+            System.out.println("Add customer action was canceled.");
         }
-    } else {
-        System.out.println("Add customer action was canceled.");
-    }
     }//GEN-LAST:event_btnAddCustomerActionPerformed
 
     private void btnGenerateReportActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGenerateReportActionPerformed
-       int confirm = JOptionPane.showConfirmDialog(this, "Do you want to generate the report now?", "Generate Report", JOptionPane.YES_NO_OPTION);
-    if (confirm == JOptionPane.YES_OPTION) {
-        // Thực hiện logic tạo báo cáo
-        System.out.println("Generating report...");
-    } else {
-        System.out.println("Report generation was canceled.");
+             int confirm = JOptionPane.showConfirmDialog(this, "Do you want to generate the report now?", "Generate Report", JOptionPane.YES_NO_OPTION);
+        if (confirm == JOptionPane.YES_OPTION) {
+            System.out.println("Generating report...");
+        } else {
+            System.out.println("Report generation was canceled.");
+        }
     }
+
+    private void btnViewTransactionsActionPerformed() {
+        
     }//GEN-LAST:event_btnGenerateReportActionPerformed
 
     private void btnViewTransactionsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnViewTransactionsActionPerformed
-        // Giả sử kiểm tra nếu không có giao dịch nào
-    boolean hasTransactions = false; // Biến giả định cho ví dụ
-
-    if (!hasTransactions) {
-        JOptionPane.showMessageDialog(this, "No transactions available to view.", "View Transactions", JOptionPane.INFORMATION_MESSAGE);
-    } else {
-        // Thực hiện logic xem giao dịch
-        System.out.println("Viewing transactions...");
-    }
+       if (transactions.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "No transactions available to view.", "View Transactions", JOptionPane.INFORMATION_MESSAGE);
+        } else {
+            StringBuilder transactionHistory = new StringBuilder();
+            for (Transaction transaction : transactions) {
+                transactionHistory.append(transaction.toString()).append("\n");
+            }
+            JOptionPane.showMessageDialog(this, transactionHistory.toString());
+        }
     }//GEN-LAST:event_btnViewTransactionsActionPerformed
 
     private void btnReleaseSpotActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnReleaseSpotActionPerformed
-          JTextField txtSpotNumber = new JTextField(15);
-    JPanel panel = new JPanel();
-    panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-    panel.add(new JLabel("Spot Number:"));
-    panel.add(txtSpotNumber);
-
-    int result = JOptionPane.showConfirmDialog(null, panel, "Release Parking Spot", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
-    if (result == JOptionPane.OK_OPTION) {
-        String spotNumber = txtSpotNumber.getText();
-        if (spotNumber.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Please enter the spot number.", "Input Error", JOptionPane.ERROR_MESSAGE);
-        } else {
-            // Thực hiện logic giải phóng chỗ đỗ
-            System.out.println("Releasing spot number: " + spotNumber);
+         String input = JOptionPane.showInputDialog(this, "Enter Parking Spot ID to release (1-10):");
+        if (input != null) {
+            try {
+                int spaceId = Integer.parseInt(input);
+                if (parkingLot.releaseSpace(spaceId)) {
+                    JOptionPane.showMessageDialog(this, "Parking spot " + spaceId + " released successfully.");
+                    Transaction transaction = new Transaction("T" + (transactions.size() + 1), "N/A", "N/A", "Release", 0.0, new Date());
+                    transactions.add(transaction);
+                } else {
+                    JOptionPane.showMessageDialog(this, "Parking spot " + spaceId + " is already available or does not exist.");
+                }
+            } catch (NumberFormatException e) {
+                JOptionPane.showMessageDialog(this, "Invalid input. Please enter a valid number.");
+            }
         }
-    }
     }//GEN-LAST:event_btnReleaseSpotActionPerformed
+
+    private void btnViewAttendantInfoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnViewAttendantInfoActionPerformed
+       boolean found = false;
+
+        if (!found) {
+            JOptionPane.showMessageDialog(this, "No attendant information available.", "View Attendant Info", JOptionPane.INFORMATION_MESSAGE);
+        } else {
+            System.out.println("Viewing attendant information...");
+        }
+    }//GEN-LAST:event_btnViewAttendantInfoActionPerformed
 
     private void btnSendNotificationActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSendNotificationActionPerformed
          String message = JOptionPane.showInputDialog(this, "Enter the notification message:", "Send Notification", JOptionPane.PLAIN_MESSAGE);
-    if (message != null && !message.trim().isEmpty()) {
-        // Thực hiện logic gửi thông báo
-        System.out.println("Sending notification: " + message);
-    } else if (message != null) {
-        JOptionPane.showMessageDialog(this, "Notification message cannot be empty.", "Input Error", JOptionPane.ERROR_MESSAGE);
-    }
+        if (message != null && !message.trim().isEmpty()) {
+            System.out.println("Sending notification: " + message);
+        } else if (message != null) {
+            JOptionPane.showMessageDialog(this, "Notification message cannot be empty.", "Input Error", JOptionPane.ERROR_MESSAGE);
+        }
     }//GEN-LAST:event_btnSendNotificationActionPerformed
 
-    private void btnViewAttendantInfoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnViewAttendantInfoActionPerformed
-        // Giả sử không tìm thấy thông tin nhân viên quản lý
-    boolean found = false; // Biến giả định cho ví dụ
-
-    if (!found) {
-        JOptionPane.showMessageDialog(this, "No attendant information available.", "View Attendant Info", JOptionPane.INFORMATION_MESSAGE);
-    } else {
-        // Thực hiện logic xem thông tin nhân viên quản lý
-        System.out.println("Viewing attendant information...");
-    }
-    }//GEN-LAST:event_btnViewAttendantInfoActionPerformed
-
     private void btnExitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnExitActionPerformed
-         int confirm = JOptionPane.showConfirmDialog(this, "Are you sure you want to exit?", "Exit", JOptionPane.YES_NO_OPTION);
-    if (confirm == JOptionPane.YES_OPTION) {
-        System.exit(0);
-    }
+        int confirm = JOptionPane.showConfirmDialog(this, "Are you sure you want to exit?", "Exit", JOptionPane.YES_NO_OPTION);
+        if (confirm == JOptionPane.YES_OPTION) {
+            System.exit(0);
+        }        // TODO add your handling code here:
     }//GEN-LAST:event_btnExitActionPerformed
 
     /**
@@ -254,29 +269,29 @@ public class AdminScreen extends javax.swing.JFrame {
          * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
          */
         try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
+        for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+            if ("Nimbus".equals(info.getName())) {
+                javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                break;
             }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(AdminScreen.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(AdminScreen.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(AdminScreen.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(AdminScreen.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
-        //</editor-fold>
+    } catch (ClassNotFoundException ex) {
+        java.util.logging.Logger.getLogger(AdminScreen.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+    } catch (InstantiationException ex) {
+        java.util.logging.Logger.getLogger(AdminScreen.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+    } catch (IllegalAccessException ex) {
+        java.util.logging.Logger.getLogger(AdminScreen.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+    } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+        java.util.logging.Logger.getLogger(AdminScreen.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+    }
+    //</editor-fold>
 
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new AdminScreen().setVisible(true);
-            }
-        });
+    /* Create and display the form */
+    java.awt.EventQueue.invokeLater(() -> {
+        ParkingLot parkingLot = new ParkingLot(50);
+        ArrayList<Transaction> transactions = new ArrayList<>();
+        new AdminScreen(parkingLot, transactions).setVisible(true);
+    });
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

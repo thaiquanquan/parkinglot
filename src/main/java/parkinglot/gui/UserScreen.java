@@ -3,20 +3,33 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
 package parkinglot.gui;
+import java.util.ArrayList;
+import java.util.Date;
 import javax.swing.JOptionPane;
+import parkinglot.core.ParkingLot;
+import parkinglot.core.Vehicle;
+import parkinglot.transaction.Transaction;
 
 /**
  *
  * @author Maxsys
  */
 public class UserScreen extends javax.swing.JFrame {
+   private ParkingLot parkingLot;
+    private ArrayList<Transaction> transactions;
+    private AdminScreen adminScreen; // Tham chiếu đến AdminScreen
 
     /**
      * Creates new form UserScreen
      */
-    public UserScreen() {
+    
+    public UserScreen(ParkingLot parkingLot, ArrayList<Transaction> transactions, AdminScreen adminScreen) {
+        this.parkingLot = parkingLot;
+        this.transactions = transactions;
+        this.adminScreen = adminScreen; // Liên kết với AdminScreen
         initComponents();
-        this.setVisible(true); // Đảm bảo giao diện được hiển thị
+        this.setVisible(true);
+
     }
 
     /**
@@ -118,19 +131,73 @@ public class UserScreen extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnCheckAvailabilityActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCheckAvailabilityActionPerformed
-       JOptionPane.showMessageDialog(this, "Checking availability...");
+        int availableSpots = parkingLot.getAvailableSpacesCount();
+        JOptionPane.showMessageDialog(this, "Number of available parking spots: " + availableSpots);
     }//GEN-LAST:event_btnCheckAvailabilityActionPerformed
 
     private void btnReserveSpotActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnReserveSpotActionPerformed
-       JOptionPane.showMessageDialog(this, "Reserving spot...");
+      String input = JOptionPane.showInputDialog(this, "Enter Parking Spot ID to reserve (1-10):");
+        if (input != null) {
+            try {
+                int spaceId = Integer.parseInt(input);
+                if (parkingLot.getParkingSpace(spaceId) != null && parkingLot.getParkingSpace(spaceId).isAvailable()) {
+                    String ownerName = JOptionPane.showInputDialog(this, "Enter Owner Name:");
+                    String licensePlate = JOptionPane.showInputDialog(this, "Enter License Plate:");
+                    String vehicleType = JOptionPane.showInputDialog(this, "Enter Vehicle Type:");
+
+                    if (ownerName != null && licensePlate != null && vehicleType != null) {
+                        Vehicle vehicle = new Vehicle(licensePlate, ownerName, vehicleType);
+                        if (parkingLot.reserveSpace(spaceId, vehicle)) {
+                            JOptionPane.showMessageDialog(this, "Parking spot " + spaceId + " reserved successfully for vehicle: " + vehicle);
+                            Transaction transaction = new Transaction("T" + (transactions.size() + 1), ownerName, licensePlate, "Reserve", 0.0, new Date());
+                            transactions.add(transaction);
+
+                            // Gửi thông báo đến AdminScreen
+                            adminScreen.updateParkingStatus(licensePlate, "reserved");
+                        } else {
+                            JOptionPane.showMessageDialog(this, "Parking spot " + spaceId + " is already reserved.");
+                        }
+                    } else {
+                        JOptionPane.showMessageDialog(this, "Reservation cancelled.");
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(this, "Parking spot " + spaceId + " is not available or does not exist.");
+                }
+            } catch (NumberFormatException e) {
+                JOptionPane.showMessageDialog(this, "Invalid input. Please enter a valid number.");
+            }
+        }
     }//GEN-LAST:event_btnReserveSpotActionPerformed
 
     private void btnViewReservationHistoryActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnViewReservationHistoryActionPerformed
-       JOptionPane.showMessageDialog(this, "Viewing reservation history...");
+       if (transactions.isEmpty()) {
+        JOptionPane.showMessageDialog(this, "No transactions available to view.", "Transaction History", JOptionPane.INFORMATION_MESSAGE);
+    } else {
+        StringBuilder history = new StringBuilder("Transaction History:\n");
+        for (Transaction transaction : transactions) {
+            history.append(transaction.toString()).append("\n");
+        }
+        JOptionPane.showMessageDialog(this, history.toString(), "Transaction History", JOptionPane.INFORMATION_MESSAGE);
+    }
     }//GEN-LAST:event_btnViewReservationHistoryActionPerformed
 
     private void btnCancelReservationActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelReservationActionPerformed
-        JOptionPane.showMessageDialog(this, "Cancelling reservation...");
+      String vehicleNumber = JOptionPane.showInputDialog(this, "Enter Vehicle Number to Cancel Reservation:");
+    if (vehicleNumber != null && !vehicleNumber.trim().isEmpty()) {
+        // Chuẩn hóa biển số xe để tránh lỗi do khác biệt chữ hoa/chữ thường và khoảng trắng
+        vehicleNumber = vehicleNumber.trim().toUpperCase();
+
+        if (parkingLot.cancelReservation(vehicleNumber)) {
+            JOptionPane.showMessageDialog(this, "Reservation for vehicle " + vehicleNumber + " has been canceled.");
+
+            // Gửi thông báo đến AdminScreen
+            adminScreen.updateParkingStatus(vehicleNumber, "released");
+        } else {
+            JOptionPane.showMessageDialog(this, "No reservation found for vehicle " + vehicleNumber);
+        }
+    } else {
+        JOptionPane.showMessageDialog(this, "Vehicle number cannot be empty.");
+    }
     }//GEN-LAST:event_btnCancelReservationActionPerformed
 
     private void btnCalculateChargesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCalculateChargesActionPerformed
@@ -168,12 +235,15 @@ public class UserScreen extends javax.swing.JFrame {
         }
         //</editor-fold>
 
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new UserScreen().setVisible(true);
-            }
-        });
+        ParkingLot sharedParkingLot = new ParkingLot(50);
+    ArrayList<Transaction> sharedTransactions = new ArrayList<>();
+    AdminScreen adminScreen = new AdminScreen(sharedParkingLot, sharedTransactions);
+    
+    // Truyền các đối tượng dùng chung khi khởi tạo UserScreen
+    UserScreen userScreen = new UserScreen(sharedParkingLot, sharedTransactions, adminScreen);
+    
+    // Hiển thị màn hình người dùng
+    userScreen.setVisible(true);
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

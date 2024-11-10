@@ -349,14 +349,21 @@ public class MainScreen extends javax.swing.JFrame {
     }//GEN-LAST:event_viewAttendantInfoButtonActionPerformed
 
     private void btnUserInterfaceActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUserInterfaceActionPerformed
-         new UserScreen(); // Mở giao diện người dùng
+          // Khởi tạo đối tượng AdminScreen trước để có thể truyền vào UserScreen
+    AdminScreen adminScreen = new AdminScreen(parkingLot, transactions);
+
+    // Khởi tạo UserScreen với các tham số cần thiết
+    UserScreen userScreen = new UserScreen(parkingLot, transactions, adminScreen);
+    userScreen.setVisible(true);
+
+    // Đóng MainScreen
          dispose(); // Đóng MainScreen
     }//GEN-LAST:event_btnUserInterfaceActionPerformed
 
     private void btnAdminInterfaceActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAdminInterfaceActionPerformed
         String password = JOptionPane.showInputDialog("Enter admin password:");
         if ("admin123".equals(password)) { // Kiểm tra mật khẩu
-            new AdminScreen(); // Mở giao diện quản trị viên
+            new AdminScreen(parkingLot, transactions); // Mở giao diện quản trị viên
             dispose(); // Đóng MainScreen
         } else {
             JOptionPane.showMessageDialog(this, "Invalid password!");
