@@ -136,37 +136,59 @@ public class UserScreen extends javax.swing.JFrame {
     }//GEN-LAST:event_btnCheckAvailabilityActionPerformed
 
     private void btnReserveSpotActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnReserveSpotActionPerformed
-      String input = JOptionPane.showInputDialog(this, "Enter Parking Spot ID to reserve (1-10):");
-        if (input != null) {
-            try {
-                int spaceId = Integer.parseInt(input);
-                if (parkingLot.getParkingSpace(spaceId) != null && parkingLot.getParkingSpace(spaceId).isAvailable()) {
-                    String ownerName = JOptionPane.showInputDialog(this, "Enter Owner Name:");
-                    String licensePlate = JOptionPane.showInputDialog(this, "Enter License Plate:");
-                    String vehicleType = JOptionPane.showInputDialog(this, "Enter Vehicle Type:");
+       // Yêu cầu người dùng nhập ID chỗ đỗ
+    String input = JOptionPane.showInputDialog(this, "Enter Parking Spot ID to reserve (1-10):");
+    if (input != null) {
+        try {
+            int spaceId = Integer.parseInt(input);
 
-                    if (ownerName != null && licensePlate != null && vehicleType != null) {
-                        Vehicle vehicle = new Vehicle(licensePlate, ownerName, vehicleType);
-                        if (parkingLot.reserveSpace(spaceId, vehicle)) {
-                            JOptionPane.showMessageDialog(this, "Parking spot " + spaceId + " reserved successfully for vehicle: " + vehicle);
-                            Transaction transaction = new Transaction("T" + (transactions.size() + 1), ownerName, licensePlate, "Reserve", 0.0, new Date());
-                            transactions.add(transaction);
-
-                            // Gửi thông báo đến AdminScreen
-                            adminScreen.updateParkingStatus(licensePlate, "reserved");
-                        } else {
-                            JOptionPane.showMessageDialog(this, "Parking spot " + spaceId + " is already reserved.");
-                        }
-                    } else {
-                        JOptionPane.showMessageDialog(this, "Reservation cancelled.");
-                    }
-                } else {
-                    JOptionPane.showMessageDialog(this, "Parking spot " + spaceId + " is not available or does not exist.");
+            // Kiểm tra chỗ đỗ có sẵn không
+            if (parkingLot.getParkingSpace(spaceId) != null && parkingLot.getParkingSpace(spaceId).isAvailable()) {
+                // Yêu cầu thông tin từ người dùng
+                String ownerName = JOptionPane.showInputDialog(this, "Enter Owner Name:");
+                if (ownerName == null || ownerName.trim().isEmpty()) {
+                    JOptionPane.showMessageDialog(this, "Owner name cannot be empty.", "Error", JOptionPane.ERROR_MESSAGE);
+                    return;
                 }
-            } catch (NumberFormatException e) {
-                JOptionPane.showMessageDialog(this, "Invalid input. Please enter a valid number.");
+
+                String licensePlate = JOptionPane.showInputDialog(this, "Enter License Plate:");
+                if (licensePlate == null || licensePlate.trim().isEmpty()) {
+                    JOptionPane.showMessageDialog(this, "License plate cannot be empty.", "Error", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                String vehicleType = JOptionPane.showInputDialog(this, "Enter Vehicle Type:");
+                if (vehicleType == null || (!vehicleType.equalsIgnoreCase("car") && !vehicleType.equalsIgnoreCase("motorbike"))) {
+                    JOptionPane.showMessageDialog(this, "Invalid vehicle type. Please enter 'car' or 'motorbike'.", "Error", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                // Tạo đối tượng Vehicle
+                Vehicle vehicle = new Vehicle(licensePlate, ownerName, vehicleType);
+
+                // Đặt chỗ
+                if (parkingLot.reserveSpace(spaceId, vehicle)) {
+                    JOptionPane.showMessageDialog(this, "Parking spot " + spaceId + " reserved successfully for vehicle: " + vehicle);
+
+                    // Tạo Transaction với thông tin đầy đủ
+                    Transaction transaction = new Transaction(vehicleType, new Date());
+                    transaction.setVehicleLicense(licensePlate);
+                    transaction.setCustomerId(ownerName);
+                    transaction.setTransactionType("Reserve"); // Gán loại giao dịch
+                    transactions.add(transaction);
+
+                    // Gửi thông báo đến AdminScreen
+                    adminScreen.updateParkingStatus(licensePlate, "reserved");
+                } else {
+                    JOptionPane.showMessageDialog(this, "Parking spot " + spaceId + " is already reserved.");
+                }
+            } else {
+                JOptionPane.showMessageDialog(this, "Parking spot " + spaceId + " is not available or does not exist.");
             }
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this, "Invalid input. Please enter a valid number.", "Error", JOptionPane.ERROR_MESSAGE);
         }
+    }
     }//GEN-LAST:event_btnReserveSpotActionPerformed
 
     private void btnViewReservationHistoryActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnViewReservationHistoryActionPerformed
@@ -182,7 +204,7 @@ public class UserScreen extends javax.swing.JFrame {
     }//GEN-LAST:event_btnViewReservationHistoryActionPerformed
 
     private void btnCancelReservationActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelReservationActionPerformed
-      String vehicleNumber = JOptionPane.showInputDialog(this, "Enter Vehicle Number to Cancel Reservation:");
+       String vehicleNumber = JOptionPane.showInputDialog(this, "Enter Vehicle Number to Cancel Reservation:");
     if (vehicleNumber != null && !vehicleNumber.trim().isEmpty()) {
         // Chuẩn hóa biển số xe để tránh lỗi do khác biệt chữ hoa/chữ thường và khoảng trắng
         vehicleNumber = vehicleNumber.trim().toUpperCase();
@@ -190,10 +212,28 @@ public class UserScreen extends javax.swing.JFrame {
         if (parkingLot.cancelReservation(vehicleNumber)) {
             JOptionPane.showMessageDialog(this, "Reservation for vehicle " + vehicleNumber + " has been canceled.");
 
+            // Xóa giao dịch "Reserve" tương ứng khỏi danh sách transactions
+            Transaction transactionToRemove = null;
+            for (Transaction transaction : transactions) {
+                // Tìm giao dịch "Reserve" liên quan đến biển số xe
+                if ("Reserve".equalsIgnoreCase(transaction.getTransactionType())
+                        && vehicleNumber.equalsIgnoreCase(transaction.getVehicleLicense())) {
+                    transactionToRemove = transaction;
+                    break;
+                }
+            }
+
+            if (transactionToRemove != null) {
+                transactions.remove(transactionToRemove);
+                JOptionPane.showMessageDialog(this, "Transaction for vehicle " + vehicleNumber + " has been removed.");
+            } else {
+                JOptionPane.showMessageDialog(this, "No related transaction found for vehicle " + vehicleNumber + ".");
+            }
+
             // Gửi thông báo đến AdminScreen
             adminScreen.updateParkingStatus(vehicleNumber, "released");
         } else {
-            JOptionPane.showMessageDialog(this, "No reservation found for vehicle " + vehicleNumber);
+            JOptionPane.showMessageDialog(this, "No reservation found for vehicle " + vehicleNumber + ".");
         }
     } else {
         JOptionPane.showMessageDialog(this, "Vehicle number cannot be empty.");
@@ -201,7 +241,57 @@ public class UserScreen extends javax.swing.JFrame {
     }//GEN-LAST:event_btnCancelReservationActionPerformed
 
     private void btnCalculateChargesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCalculateChargesActionPerformed
-         JOptionPane.showMessageDialog(this, "Calculating charges...");
+     // Kiểm tra danh sách giao dịch
+    if (transactions.isEmpty()) {
+        JOptionPane.showMessageDialog(this, "No transactions available for calculating charges.", "Error", JOptionPane.ERROR_MESSAGE);
+        return;
+    }
+
+    // Hiển thị danh sách giao dịch hợp lệ
+    StringBuilder availableTransactions = new StringBuilder("Available Transactions:\n");
+    int index = 1; // Đánh số thứ tự giao dịch
+    for (Transaction transaction : transactions) {
+        if ("Reserve".equalsIgnoreCase(transaction.getTransactionType())) { // Chỉ hiển thị giao dịch "Reserve"
+            availableTransactions.append(index).append(". ").append(transaction.getVehicleLicense())
+                .append(" (").append(transaction.getTransactionType()).append(")\n");
+            index++;
+        }
+    }
+
+    if (index == 1) { // Không có giao dịch "Reserve"
+        JOptionPane.showMessageDialog(this, "No reserved transactions available for charges calculation.", "Info", JOptionPane.INFORMATION_MESSAGE);
+        return;
+    }
+
+    // Yêu cầu người dùng chọn giao dịch
+    String input = JOptionPane.showInputDialog(this, "Select a transaction to calculate charges:\n" + availableTransactions);
+    if (input == null || input.trim().isEmpty()) {
+        JOptionPane.showMessageDialog(this, "No transaction selected.");
+        return;
+    }
+
+    try {
+        int transactionIndex = Integer.parseInt(input) - 1;
+        if (transactionIndex < 0 || transactionIndex >= transactions.size()) {
+            JOptionPane.showMessageDialog(this, "Invalid transaction selected.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        Transaction transaction = transactions.get(transactionIndex);
+
+        // Kiểm tra thời gian và tính phí
+        if (transaction.getStartTime() == null) {
+            JOptionPane.showMessageDialog(this, "Start time is not set for this transaction.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        if (transaction.getEndTime() == null) {
+            transaction.setEndTime(new Date());
+        }
+        double charges = transaction.calculateCharges();
+        JOptionPane.showMessageDialog(this, "Charges for vehicle " + transaction.getVehicleLicense() + ": " + charges + " VND");
+    } catch (NumberFormatException e) {
+        JOptionPane.showMessageDialog(this, "Invalid input. Please enter a valid number.", "Error", JOptionPane.ERROR_MESSAGE);
+    }
     }//GEN-LAST:event_btnCalculateChargesActionPerformed
 
     private void btnExitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnExitActionPerformed

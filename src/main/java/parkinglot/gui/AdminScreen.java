@@ -216,21 +216,41 @@ public class AdminScreen extends javax.swing.JFrame {
     }//GEN-LAST:event_btnViewTransactionsActionPerformed
 
     private void btnReleaseSpotActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnReleaseSpotActionPerformed
-         String input = JOptionPane.showInputDialog(this, "Enter Parking Spot ID to release (1-10):");
-        if (input != null) {
-            try {
-                int spaceId = Integer.parseInt(input);
-                if (parkingLot.releaseSpace(spaceId)) {
-                    JOptionPane.showMessageDialog(this, "Parking spot " + spaceId + " released successfully.");
-                    Transaction transaction = new Transaction("T" + (transactions.size() + 1), "N/A", "N/A", "Release", 0.0, new Date());
-                    transactions.add(transaction);
-                } else {
-                    JOptionPane.showMessageDialog(this, "Parking spot " + spaceId + " is already available or does not exist.");
+      String input = JOptionPane.showInputDialog(this, "Enter Parking Spot ID to release (1-10):");
+    if (input != null) {
+        try {
+            int spaceId = Integer.parseInt(input);
+            if (parkingLot.releaseSpace(spaceId)) {
+                JOptionPane.showMessageDialog(this, "Parking spot " + spaceId + " released successfully.");
+
+                // Xóa giao dịch "Reserve" liên quan đến Parking Spot ID
+                Transaction transactionToRemove = null;
+                for (Transaction transaction : transactions) {
+                    // Tìm giao dịch có TransactionType là "Reserve" và chứa Space ID
+                    if ("Reserve".equalsIgnoreCase(transaction.getTransactionType())
+                            && transaction.getTransactionId().contains("Space-" + spaceId)) {
+                        transactionToRemove = transaction;
+                        break;
+                    }
                 }
-            } catch (NumberFormatException e) {
-                JOptionPane.showMessageDialog(this, "Invalid input. Please enter a valid number.");
+
+                if (transactionToRemove != null) {
+                    transactions.remove(transactionToRemove); // Xóa giao dịch "Reserve"
+                    JOptionPane.showMessageDialog(this, "Related reservation transaction has been removed.");
+                } else {
+                    JOptionPane.showMessageDialog(this, "No reservation transaction found for this spot.");
+                }
+
+                // Tạo giao dịch mới cho "Release"
+                Transaction transaction = new Transaction("T" + (transactions.size() + 1), "Admin", "N/A", "Release", 0.0, new Date());
+                transactions.add(transaction);
+            } else {
+                JOptionPane.showMessageDialog(this, "Parking spot " + spaceId + " is already available or does not exist.");
             }
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this, "Invalid input. Please enter a valid number.");
         }
+    }
     }//GEN-LAST:event_btnReleaseSpotActionPerformed
 
     private void btnViewAttendantInfoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnViewAttendantInfoActionPerformed
