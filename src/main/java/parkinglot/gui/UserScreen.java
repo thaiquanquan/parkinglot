@@ -136,8 +136,8 @@ public class UserScreen extends javax.swing.JFrame {
     }//GEN-LAST:event_btnCheckAvailabilityActionPerformed
 
     private void btnReserveSpotActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnReserveSpotActionPerformed
-       // Yêu cầu người dùng nhập ID chỗ đỗ
-    String input = JOptionPane.showInputDialog(this, "Enter Parking Spot ID to reserve (1-10):");
+     // Yêu cầu người dùng nhập ID chỗ đỗ
+    String input = JOptionPane.showInputDialog(this, "Enter Parking Spot ID to reserve (1-50):");
     if (input != null) {
         try {
             int spaceId = Integer.parseInt(input);
@@ -163,15 +163,27 @@ public class UserScreen extends javax.swing.JFrame {
                     return;
                 }
 
+                String phoneNumber = JOptionPane.showInputDialog(this, "Enter Phone Number:");
+                if (phoneNumber == null || phoneNumber.trim().isEmpty()) {
+                    JOptionPane.showMessageDialog(this, "Phone number cannot be empty.", "Error", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                String email = JOptionPane.showInputDialog(this, "Enter Email Address:");
+                if (email == null || email.trim().isEmpty()) {
+                    JOptionPane.showMessageDialog(this, "Email address cannot be empty.", "Error", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
                 // Tạo đối tượng Vehicle
-                Vehicle vehicle = new Vehicle(licensePlate, ownerName, vehicleType);
+                Vehicle vehicle = new Vehicle(licensePlate, ownerName, vehicleType, phoneNumber, email);
 
                 // Đặt chỗ
                 if (parkingLot.reserveSpace(spaceId, vehicle)) {
                     JOptionPane.showMessageDialog(this, "Parking spot " + spaceId + " reserved successfully for vehicle: " + vehicle);
 
                     // Tạo Transaction với thông tin đầy đủ
-                    Transaction transaction = new Transaction(vehicleType, new Date());
+                    Transaction transaction = new Transaction(vehicleType, new Date(), phoneNumber, email, spaceId);
                     transaction.setVehicleLicense(licensePlate);
                     transaction.setCustomerId(ownerName);
                     transaction.setTransactionType("Reserve"); // Gán loại giao dịch

@@ -2,7 +2,6 @@ package parkinglot.transaction;
 
 import java.util.Date;
 
-// Abstract class to calculate charges
 interface ChargeCalculator {
     double calculateCharge(int hours);
 }
@@ -26,31 +25,38 @@ class MotorbikeChargeCalculator implements ChargeCalculator {
 }
 
 public class Transaction {
-    private String transactionId;   // ID của giao dịch
-    private String customerId;      // ID khách hàng thực hiện giao dịch
-    private String vehicleLicense;  // Biển số xe của khách hàng
-    private String transactionType; // Loại giao dịch (reserve, release, calculate charges, etc.)
-    private double amount;          // Số tiền của giao dịch
-    private Date date;              // Ngày thực hiện giao dịch
-    private Date startTime;         // Thời gian xe vào
-    private Date endTime;           // Thời gian xe rời đi
-    private ChargeCalculator chargeCalculator; // Đối tượng tính phí
+    private String transactionId;
+    private String customerId;
+    private String vehicleLicense;
+    private String transactionType;
+    private double amount;
+    private Date date;
+    private Date startTime;
+    private Date endTime;
+    private ChargeCalculator chargeCalculator;
+    private String phoneNumber; // Trường mới
+    private String email;       // Trường mới
+    private int parkingSpotId;  // Trường mới
 
-    // Constructor cho Transaction
-    public Transaction(String transactionId, String customerId, String vehicleLicense, String transactionType, double amount, Date date) {
+    // Constructor cập nhật
+    public Transaction(String transactionId, String customerId, String vehicleLicense, String transactionType, double amount, Date date, String phoneNumber, String email, int parkingSpotId) {
         this.transactionId = transactionId;
         this.customerId = customerId;
         this.vehicleLicense = vehicleLicense;
         this.transactionType = transactionType;
         this.amount = amount;
         this.date = date;
+        this.phoneNumber = phoneNumber;
+        this.email = email;
+        this.parkingSpotId = parkingSpotId;
     }
 
-    // Constructor gán loại xe và thời gian bắt đầu
-    public Transaction(String vehicleType, Date startTime) {
+    public Transaction(String vehicleType, Date startTime, String phoneNumber, String email, int parkingSpotId) {
         this.startTime = startTime;
+        this.phoneNumber = phoneNumber;
+        this.email = email;
+        this.parkingSpotId = parkingSpotId;
 
-        // Gán ChargeCalculator dựa trên loại xe
         switch (vehicleType.toLowerCase()) {
             case "car":
                 this.chargeCalculator = new CarChargeCalculator();
@@ -63,37 +69,66 @@ public class Transaction {
         }
     }
 
-    // Getter cho ChargeCalculator
-    public ChargeCalculator getChargeCalculator() {
-        return chargeCalculator;
+    // Getters và setters cho các trường mới
+    public String getPhoneNumber() {
+        return phoneNumber;
     }
 
-    // Thêm thời gian rời đi
-    public void setEndTime(Date endTime) {
-        this.endTime = endTime;
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
     }
 
-    // Getter cho startTime
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public int getParkingSpotId() {
+        return parkingSpotId;
+    }
+
+    public void setParkingSpotId(int parkingSpotId) {
+        this.parkingSpotId = parkingSpotId;
+    }
+
+    // Thêm các setters bị thiếu
+    public void setVehicleLicense(String vehicleLicense) {
+        this.vehicleLicense = vehicleLicense;
+    }
+
+    public void setCustomerId(String customerId) {
+        this.customerId = customerId;
+    }
+
+    public void setTransactionType(String transactionType) {
+        this.transactionType = transactionType;
+    }
+
+    // Các getters và setters khác...
+
+    public String getVehicleLicense() {
+        return vehicleLicense;
+    }
+
+    public String getTransactionType() {
+        return transactionType;
+    }
+
     public Date getStartTime() {
         return startTime;
     }
 
-    // Getter cho endTime
     public Date getEndTime() {
         return endTime;
     }
 
-    // Tính số giờ đỗ
-    public long calculateHours() {
-        if (startTime == null || endTime == null) {
-            throw new IllegalStateException("Start or end time not set");
-        }
-        long millis = endTime.getTime() - startTime.getTime();
-        long hours = millis / (1000 * 60 * 60); // Chuyển đổi từ mili giây sang giờ
-        return hours > 0 ? hours : 1;          // Tối thiểu là 1 giờ
+    public void setEndTime(Date endTime) {
+        this.endTime = endTime;
     }
 
-    // Tính phí
     public double calculateCharges() {
         if (chargeCalculator == null || startTime == null || endTime == null) {
             throw new IllegalStateException("ChargeCalculator, Start time or End time is not set");
@@ -101,53 +136,13 @@ public class Transaction {
         return chargeCalculator.calculateCharge((int) calculateHours());
     }
 
-    // Getter và Setter cho các thuộc tính khác
-    public String getTransactionId() {
-        return transactionId;
-    }
-
-    public void setTransactionId(String transactionId) {
-        this.transactionId = transactionId;
-    }
-
-    public String getCustomerId() {
-        return customerId;
-    }
-
-    public void setCustomerId(String customerId) {
-        this.customerId = customerId;
-    }
-
-    public String getVehicleLicense() {
-        return vehicleLicense;
-    }
-
-    public void setVehicleLicense(String vehicleLicense) {
-        this.vehicleLicense = vehicleLicense;
-    }
-
-    public String getTransactionType() {
-        return transactionType;
-    }
-
-    public void setTransactionType(String transactionType) {
-        this.transactionType = transactionType;
-    }
-
-    public double getAmount() {
-        return amount;
-    }
-
-    public void setAmount(double amount) {
-        this.amount = amount;
-    }
-
-    public Date getDate() {
-        return date;
-    }
-
-    public void setDate(Date date) {
-        this.date = date;
+    private long calculateHours() {
+        if (startTime == null || endTime == null) {
+            throw new IllegalStateException("Start or end time not set");
+        }
+        long millis = endTime.getTime() - startTime.getTime();
+        long hours = millis / (1000 * 60 * 60); // Chuyển đổi từ mili giây sang giờ
+        return hours > 0 ? hours : 1;          // Tối thiểu là 1 giờ
     }
 
     @Override
@@ -161,6 +156,9 @@ public class Transaction {
                 ", date=" + (date != null ? date.toString() : "Not set") +
                 ", startTime=" + (startTime != null ? startTime.toString() : "Not set") +
                 ", endTime=" + (endTime != null ? endTime.toString() : "Not set") +
+                ", phoneNumber='" + phoneNumber + '\'' +
+                ", email='" + email + '\'' +
+                ", parkingSpotId=" + parkingSpotId +
                 '}';
     }
 }

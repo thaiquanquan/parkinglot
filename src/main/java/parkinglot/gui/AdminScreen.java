@@ -14,6 +14,7 @@ import javax.swing.Box;
 import parkinglot.transaction.Transaction;
 import parkinglot.core.ParkingLot;
 import parkinglot.core.User;
+import javax.swing.table.DefaultTableModel;
 
 /**
  *
@@ -24,6 +25,8 @@ public class AdminScreen extends javax.swing.JFrame {
     private ParkingLot parkingLot;
     private ArrayList<User> users;
     private UserScreen userScreen; // Tham chiếu đến UserScreen
+    private DefaultTableModel tableModel; // Khai báo biến DefaultTableModel
+    
 
 
     /**
@@ -40,6 +43,7 @@ public class AdminScreen extends javax.swing.JFrame {
         this.users = new ArrayList<>();
         initComponents();
         this.setVisible(true); // Ensure the UI is displayed
+        tableModel = (DefaultTableModel) jTable1.getModel();
     }
 
     /**
@@ -58,6 +62,8 @@ public class AdminScreen extends javax.swing.JFrame {
         btnSendNotification = new javax.swing.JButton();
         btnViewAttendantInfo = new javax.swing.JButton();
         btnExit = new javax.swing.JButton();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        jTable1 = new javax.swing.JTable();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -110,6 +116,27 @@ public class AdminScreen extends javax.swing.JFrame {
             }
         });
 
+        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null}
+            },
+            new String [] {
+                "Id", "Customer Name", "Phone number", "Email", "PackingSpace id"
+            }
+        ) {
+            boolean[] canEdit = new boolean [] {
+                true, true, true, true, false
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        jScrollPane1.setViewportView(jTable1);
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -118,20 +145,21 @@ public class AdminScreen extends javax.swing.JFrame {
                 .addGap(22, 22, 22)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(btnExit, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                        .addComponent(btnAddCustomer, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(btnGenerateReport, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(btnViewTransactions, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                    .addComponent(btnAddCustomer, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(btnGenerateReport, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(btnViewTransactions, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addGap(54, 54, 54)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(btnReleaseSpot, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(btnSendNotification, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(btnViewAttendantInfo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap(66, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 516, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(15, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addGap(25, 25, 25)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(btnReleaseSpot, javax.swing.GroupLayout.DEFAULT_SIZE, 33, Short.MAX_VALUE)
@@ -144,50 +172,73 @@ public class AdminScreen extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(btnViewTransactions, javax.swing.GroupLayout.DEFAULT_SIZE, 32, Short.MAX_VALUE)
                     .addComponent(btnViewAttendantInfo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 41, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(btnExit, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(14, 14, 14))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 275, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnAddCustomerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddCustomerActionPerformed
-         JPanel panel = new JPanel();
-        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+     JPanel panel = new JPanel();
+    panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 
-        JTextField txtName = new JTextField(15);
-        JTextField txtPhoneNumber = new JTextField(15);
-        JTextField txtEmail = new JTextField(15);
+    JTextField txtName = new JTextField(15);
+    JTextField txtPhoneNumber = new JTextField(15);
+    JTextField txtEmail = new JTextField(15);
+    JTextField txtParkingSpaceId = new JTextField(15); // Thêm trường ID chỗ đỗ
 
-        panel.add(new JLabel("Customer Name:"));
-        panel.add(txtName);
-        panel.add(Box.createVerticalStrut(10));
+    panel.add(new JLabel("Customer Name:"));
+    panel.add(txtName);
+    panel.add(Box.createVerticalStrut(10));
 
-        panel.add(new JLabel("Phone Number:"));
-        panel.add(txtPhoneNumber);
-        panel.add(Box.createVerticalStrut(10));
+    panel.add(new JLabel("Phone Number:"));
+    panel.add(txtPhoneNumber);
+    panel.add(Box.createVerticalStrut(10));
 
-        panel.add(new JLabel("Email:"));
-        panel.add(txtEmail);
+    panel.add(new JLabel("Email:"));
+    panel.add(txtEmail);
+    panel.add(Box.createVerticalStrut(10));
 
-        int result = JOptionPane.showConfirmDialog(this, panel, "Add New Customer", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+    panel.add(new JLabel("Parking Space ID:")); // Thêm nhãn cho ID chỗ đỗ
+    panel.add(txtParkingSpaceId);
 
-        if (result == JOptionPane.OK_OPTION) {
-            String name = txtName.getText();
-            String phoneNumber = txtPhoneNumber.getText();
-            String email = txtEmail.getText();
+    int result = JOptionPane.showConfirmDialog(this, panel, "Add New Customer", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
 
-            if (name.isEmpty() || phoneNumber.isEmpty() || email.isEmpty()) {
-                JOptionPane.showMessageDialog(this, "Please fill all fields before adding the customer.", "Input Error", JOptionPane.ERROR_MESSAGE);
-            } else {
-                User newUser = new User(name, phoneNumber, email);
-                users.add(newUser);
-                JOptionPane.showMessageDialog(this, "Customer added successfully: " + name);
-            }
+    if (result == JOptionPane.OK_OPTION) {
+        String name = txtName.getText();
+        String phoneNumber = txtPhoneNumber.getText();
+        String email = txtEmail.getText();
+        String parkingSpaceIdStr = txtParkingSpaceId.getText();
+
+        if (name.isEmpty() || phoneNumber.isEmpty() || email.isEmpty() || parkingSpaceIdStr.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Please fill all fields before adding the customer.", "Input Error", JOptionPane.ERROR_MESSAGE);
         } else {
-            System.out.println("Add customer action was canceled.");
+            try {
+                int parkingSpaceId = Integer.parseInt(parkingSpaceIdStr); // Chuyển đổi ID chỗ đỗ sang số nguyên
+
+                // Giả sử Customer ID được tạo tự động
+                int customerId = users.size() + 1;
+
+                User newUser = new User(customerId, name, phoneNumber, email, parkingSpaceId);
+                users.add(newUser);
+
+                // Thêm thông tin khách hàng vào bảng
+                tableModel.addRow(new Object[]{customerId, name, phoneNumber, email, parkingSpaceId});
+
+                JOptionPane.showMessageDialog(this, "Customer added successfully: " + name);
+            } catch (NumberFormatException e) {
+                JOptionPane.showMessageDialog(this, "Parking Space ID must be a valid number.", "Input Error", JOptionPane.ERROR_MESSAGE);
+            }
         }
+    } else {
+        System.out.println("Add customer action was canceled.");
+    }
     }//GEN-LAST:event_btnAddCustomerActionPerformed
 
     private void btnGenerateReportActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGenerateReportActionPerformed
@@ -216,7 +267,7 @@ public class AdminScreen extends javax.swing.JFrame {
     }//GEN-LAST:event_btnViewTransactionsActionPerformed
 
     private void btnReleaseSpotActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnReleaseSpotActionPerformed
-      String input = JOptionPane.showInputDialog(this, "Enter Parking Spot ID to release (1-10):");
+      String input = JOptionPane.showInputDialog(this, "Enter Parking Spot ID to release (1-50):");
     if (input != null) {
         try {
             int spaceId = Integer.parseInt(input);
@@ -228,7 +279,7 @@ public class AdminScreen extends javax.swing.JFrame {
                 for (Transaction transaction : transactions) {
                     // Tìm giao dịch có TransactionType là "Reserve" và chứa Space ID
                     if ("Reserve".equalsIgnoreCase(transaction.getTransactionType())
-                            && transaction.getTransactionId().contains("Space-" + spaceId)) {
+                            && transaction.getParkingSpotId() == spaceId) {
                         transactionToRemove = transaction;
                         break;
                     }
@@ -242,7 +293,7 @@ public class AdminScreen extends javax.swing.JFrame {
                 }
 
                 // Tạo giao dịch mới cho "Release"
-                Transaction transaction = new Transaction("T" + (transactions.size() + 1), "Admin", "N/A", "Release", 0.0, new Date());
+                Transaction transaction = new Transaction("T" + (transactions.size() + 1), "Admin", "N/A", "Release", 0.0, new Date(), "N/A", "N/A", spaceId);
                 transactions.add(transaction);
             } else {
                 JOptionPane.showMessageDialog(this, "Parking spot " + spaceId + " is already available or does not exist.");
@@ -322,5 +373,7 @@ public class AdminScreen extends javax.swing.JFrame {
     private javax.swing.JButton btnSendNotification;
     private javax.swing.JButton btnViewAttendantInfo;
     private javax.swing.JButton btnViewTransactions;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JTable jTable1;
     // End of variables declaration//GEN-END:variables
 }
