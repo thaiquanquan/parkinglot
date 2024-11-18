@@ -183,7 +183,7 @@ public class AdminScreen extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
+    
     private void btnAddCustomerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddCustomerActionPerformed
      JPanel panel = new JPanel();
     panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
@@ -267,17 +267,41 @@ public class AdminScreen extends javax.swing.JFrame {
     }//GEN-LAST:event_btnViewTransactionsActionPerformed
 
     private void btnReleaseSpotActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnReleaseSpotActionPerformed
-      String input = JOptionPane.showInputDialog(this, "Enter Parking Spot ID to release (1-50):");
+    String input = JOptionPane.showInputDialog(this, "Enter Parking Spot ID to release (1-50):");
     if (input != null) {
         try {
             int spaceId = Integer.parseInt(input);
-            if (parkingLot.releaseSpace(spaceId)) {
+
+            // Attempt to release the parking space
+            if (parkingLot.releaseSpace(spaceId)) { // Check if the parking spot is released
                 JOptionPane.showMessageDialog(this, "Parking spot " + spaceId + " released successfully.");
 
-                // Xóa giao dịch "Reserve" liên quan đến Parking Spot ID
+                // Remove the corresponding row from the JTable
+                DefaultTableModel tableModel = (DefaultTableModel) jTable1.getModel();
+                int rowToRemove = -1;
+
+                // Find the row with the matching Parking Space ID
+                for (int i = 0; i < tableModel.getRowCount(); i++) {
+                    Object value = tableModel.getValueAt(i, 4); // Assuming column 4 contains ParkingSpaceId
+                    if (value != null && Integer.parseInt(value.toString()) == spaceId) {
+                        rowToRemove = i;
+                        break;
+                    }
+                }
+
+                // Remove the row if found
+                if (rowToRemove != -1) {
+                    tableModel.removeRow(rowToRemove); // Remove the row from the table model
+                    jTable1.revalidate(); // Refresh the table layout
+                    jTable1.repaint();    // Redraw the table to reflect changes
+                    JOptionPane.showMessageDialog(this, "Row for Parking Spot " + spaceId + " removed from the table.");
+                } else {
+                    JOptionPane.showMessageDialog(this, "No matching row found for Parking Spot " + spaceId + " in the table.");
+                }
+
+                // Remove the corresponding "Reserve" transaction
                 Transaction transactionToRemove = null;
                 for (Transaction transaction : transactions) {
-                    // Tìm giao dịch có TransactionType là "Reserve" và chứa Space ID
                     if ("Reserve".equalsIgnoreCase(transaction.getTransactionType())
                             && transaction.getParkingSpotId() == spaceId) {
                         transactionToRemove = transaction;
@@ -286,15 +310,24 @@ public class AdminScreen extends javax.swing.JFrame {
                 }
 
                 if (transactionToRemove != null) {
-                    transactions.remove(transactionToRemove); // Xóa giao dịch "Reserve"
+                    transactions.remove(transactionToRemove);
                     JOptionPane.showMessageDialog(this, "Related reservation transaction has been removed.");
-                } else {
-                    JOptionPane.showMessageDialog(this, "No reservation transaction found for this spot.");
                 }
 
-                // Tạo giao dịch mới cho "Release"
-                Transaction transaction = new Transaction("T" + (transactions.size() + 1), "Admin", "N/A", "Release", 0.0, new Date(), "N/A", "N/A", spaceId);
+                // Add a new "Release" transaction
+                Transaction transaction = new Transaction(
+                        "T" + (transactions.size() + 1), 
+                        "Admin", 
+                        "N/A", 
+                        "Release", 
+                        0.0, 
+                        new Date(), 
+                        "N/A", 
+                        "N/A", 
+                        spaceId
+                );
                 transactions.add(transaction);
+
             } else {
                 JOptionPane.showMessageDialog(this, "Parking spot " + spaceId + " is already available or does not exist.");
             }
@@ -302,6 +335,7 @@ public class AdminScreen extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, "Invalid input. Please enter a valid number.");
         }
     }
+
     }//GEN-LAST:event_btnReleaseSpotActionPerformed
 
     private void btnViewAttendantInfoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnViewAttendantInfoActionPerformed
