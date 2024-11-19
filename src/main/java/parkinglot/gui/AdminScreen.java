@@ -20,6 +20,10 @@ import Controller.CustomerController;
 import parkinglot.user.Admin;  // Import lớp Admin
 import Controller.CustomerService;
 import parkinglot.service.EmailService;  // Thêm dòng này để import EmailService
+import parkinglot.user.MorningAttendant;
+import parkinglot.user.NightAttendant;
+import parkinglot.user.ParkingAttendant;
+
 
 
 /**
@@ -362,13 +366,22 @@ public class AdminScreen extends javax.swing.JFrame {
     }//GEN-LAST:event_btnReleaseSpotActionPerformed
 
     private void btnViewAttendantInfoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnViewAttendantInfoActionPerformed
-       boolean found = false;
+     // Tạo danh sách nhân viên mẫu (có thể thay bằng dữ liệu từ cơ sở dữ liệu)
+    ArrayList<ParkingAttendant> attendants = new ArrayList<>();
+    attendants.add(new MorningAttendant("Alice", "alice@example.com"));
+    attendants.add(new NightAttendant("Bob", "bob@example.com"));
 
-        if (!found) {
-            JOptionPane.showMessageDialog(this, "No attendant information available.", "View Attendant Info", JOptionPane.INFORMATION_MESSAGE);
-        } else {
-            System.out.println("Viewing attendant information...");
-        }
+    // Xây dựng chuỗi thông tin để hiển thị
+    StringBuilder info = new StringBuilder("Attendant Information:\n");
+    for (ParkingAttendant attendant : attendants) {
+        info.append("Name: ").append(attendant.getName())
+            .append(", Contact Info: ").append(attendant.getContactInfo())
+            .append(", Shift: ").append(attendant.getShiftDetails())
+            .append("\n");
+    }
+
+    // Hiển thị thông tin qua JOptionPane
+    JOptionPane.showMessageDialog(this, info.toString(), "Attendant Info", JOptionPane.INFORMATION_MESSAGE);
     }//GEN-LAST:event_btnViewAttendantInfoActionPerformed
   
     private void btnSendNotificationActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSendNotificationActionPerformed

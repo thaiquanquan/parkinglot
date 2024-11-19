@@ -1,22 +1,30 @@
 package parkinglot.user;
 
-public class ParkingAttendant extends Customer {
-    private String shift;
+public abstract class ParkingAttendant {
+    private String name;
+    private String contactInfo;
 
     // Constructor
-    public ParkingAttendant(String name, String contactInfo, String shift) {
-        super(name, contactInfo);
-        this.shift = shift;
+    public ParkingAttendant(String name, String contactInfo) {
+        this.name = name;
+        this.contactInfo = contactInfo;
     }
 
-    // Getter cho shift
-    public String getShift() {
-        return shift;
+    // Getter cho thuộc tính
+    public String getName() {
+        return name;
     }
 
-    // Override phương thức toString để hiển thị thông tin nhân viên trông xe
+    public String getContactInfo() {
+        return contactInfo;
+    }
+
+    // Phương thức trừu tượng
+    public abstract String getShiftDetails();
+
+    // Phương thức thông thường
     @Override
     public String toString() {
-        return "ParkingAttendant{name='" + getName() + "', contactInfo='" + getContactInfo() + "', shift='" + shift + "'}";
+        return "ParkingAttendant{name='" + name + "', contactInfo='" + contactInfo + "'}";
     }
 }
