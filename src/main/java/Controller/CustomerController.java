@@ -3,9 +3,12 @@ package Controller;
 import parkinglot.core.Customer;
 import parkinglot.core.User;
 import parkinglot.service.EmailService;
+import java.util.ArrayList;
+import java.sql.Connection;
+import java.sql.Statement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
+
 
 public class CustomerController implements CustomerService {
 
@@ -74,11 +77,13 @@ public ArrayList<Customer> getAllCustomers() {
     String query = "SELECT * FROM customer";
     ResultSet rs = null;
     ArrayList<Customer> customers = new ArrayList<>();
+    Connection conn = null; // Kết nối cần được đóng
 
     try {
-        // Giả sử dbops.selectQuery trả về kết quả ResultSet
-        rs = dbops.selectQuery(query);
-        
+        conn = ConnectDB.getConnection(); // Kết nối cơ sở dữ liệu
+        Statement stmt = conn.createStatement(); // Tạo Statement
+        rs = stmt.executeQuery(query); // Thực thi truy vấn
+
         // Lặp qua kết quả và lấy thông tin khách hàng
         while (rs.next()) {
             Customer customer = new Customer(
@@ -93,11 +98,10 @@ public ArrayList<Customer> getAllCustomers() {
     } catch (SQLException e) {
         e.printStackTrace();
     } finally {
-        // Đảm bảo đóng ResultSet và Connection sau khi sử dụng
+        // Đảm bảo đóng ResultSet, Statement và Connection sau khi sử dụng
         try {
-            if (rs != null) {
-                rs.close();
-            }
+            if (rs != null) rs.close();
+            if (conn != null) conn.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -105,6 +109,7 @@ public ArrayList<Customer> getAllCustomers() {
 
     return customers;
 }
+
 
 
     @Override
@@ -136,23 +141,30 @@ public ArrayList<Customer> getAllCustomers() {
         }
         return -1; // Return -1 if no customer is found
     }
+@Override
+public void sendNotificationToAllCustomers(String message) {
+    // Lấy tất cả khách hàng từ cơ sở dữ liệu
+    ArrayList<Customer> customers = getAllCustomers();
+    System.out.println("Total customers to notify: " + customers.size()); // Log tổng số khách hàng
 
-      @Override
-    public void sendNotificationToAllCustomers(String message) {
-        // Lấy tất cả khách hàng từ cơ sở dữ liệu
-        ArrayList<Customer> customers = getAllCustomers();
+    // Tạo đối tượng EmailService để gửi email
+    EmailService emailService = new EmailService();
 
-        // Tạo đối tượng EmailService để gửi email
-        EmailService emailService = new EmailService();
-
-        // Gửi email thông báo đến mỗi khách hàng
-        for (Customer customer : customers) {
+    // Gửi email thông báo đến mỗi khách hàng
+    for (Customer customer : customers) {
+        try {
+            System.out.println("Sending email to: " + customer.getEmail()); // Log email đang gửi
             emailService.sendEmail(customer.getEmail(), "Customer Notification", message);
+            System.out.println("Email successfully sent to: " + customer.getEmail());
+        } catch (Exception e) {
+            // Log lỗi khi gửi email
+            System.err.println("Failed to send email to: " + customer.getEmail());
+            e.printStackTrace();
         }
-
-        System.out.println("Notification sent to all customers.");
     }
 
-    }
+    System.out.println("Notification process completed for all customers.");
+}
+}
     
 
