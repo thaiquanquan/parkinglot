@@ -17,6 +17,10 @@ import parkinglot.core.User;
 import javax.swing.table.DefaultTableModel;
 import parkinglot.core.Customer;
 import Controller.CustomerController;
+import parkinglot.user.Admin;  // Import lớp Admin
+import Controller.CustomerService;
+import parkinglot.service.EmailService;  // Thêm dòng này để import EmailService
+
 
 /**
  *
@@ -187,70 +191,72 @@ public class AdminScreen extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
     
     private void btnAddCustomerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddCustomerActionPerformed
-    JPanel panel = new JPanel();
-    panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-    
-    JTextField txtName = new JTextField(15);
-    JTextField txtPhoneNumber = new JTextField(15);
-    JTextField txtEmail = new JTextField(15);
-    JTextField txtParkingSpaceId = new JTextField(15); // Parking Space ID
+     JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 
-    panel.add(new JLabel("Customer Name:"));
-    panel.add(txtName);
-    panel.add(Box.createVerticalStrut(10));
+        JTextField txtName = new JTextField(15);
+        JTextField txtPhoneNumber = new JTextField(15);
+        JTextField txtEmail = new JTextField(15);
+        JTextField txtParkingSpaceId = new JTextField(15); // Parking Space ID
 
-    panel.add(new JLabel("Phone Number:"));
-    panel.add(txtPhoneNumber);
-    panel.add(Box.createVerticalStrut(10));
+        panel.add(new JLabel("Customer Name:"));
+        panel.add(txtName);
+        panel.add(Box.createVerticalStrut(10));
 
-    panel.add(new JLabel("Email:"));
-    panel.add(txtEmail);
-    panel.add(Box.createVerticalStrut(10));
+        panel.add(new JLabel("Phone Number:"));
+        panel.add(txtPhoneNumber);
+        panel.add(Box.createVerticalStrut(10));
 
-    panel.add(new JLabel("Parking Space ID:"));
-    panel.add(txtParkingSpaceId);
+        panel.add(new JLabel("Email:"));
+        panel.add(txtEmail);
+        panel.add(Box.createVerticalStrut(10));
 
-    int result = JOptionPane.showConfirmDialog(this, panel, "Add New Customer", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+        panel.add(new JLabel("Parking Space ID:"));
+        panel.add(txtParkingSpaceId);
 
-    if (result == JOptionPane.OK_OPTION) {
-        String name = txtName.getText();
-        String phoneNumber = txtPhoneNumber.getText();
-        String email = txtEmail.getText();
-        String parkingSpaceIdStr = txtParkingSpaceId.getText();
+        int result = JOptionPane.showConfirmDialog(this, panel, "Add New Customer", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
 
-        if (name.isEmpty() || phoneNumber.isEmpty() || email.isEmpty() || parkingSpaceIdStr.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Please fill all fields before adding the customer.", "Input Error", JOptionPane.ERROR_MESSAGE);
-        } else {
-            try {
-                int parkingSpaceId = Integer.parseInt(parkingSpaceIdStr); // Convert Parking Space ID to int
+        if (result == JOptionPane.OK_OPTION) {
+            String name = txtName.getText();
+            String phoneNumber = txtPhoneNumber.getText();
+            String email = txtEmail.getText();
+            String parkingSpaceIdStr = txtParkingSpaceId.getText();
 
-                // Assume Customer ID is generated automatically
-                int customerId = users.size() + 1;
+            if (name.isEmpty() || phoneNumber.isEmpty() || email.isEmpty() || parkingSpaceIdStr.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Please fill all fields before adding the customer.", "Input Error", JOptionPane.ERROR_MESSAGE);
+            } else {
+                try {
+                    int parkingSpaceId = Integer.parseInt(parkingSpaceIdStr); // Convert Parking Space ID to int
 
-                // Create new User object
-		User newUser = new User(customerId, name, phoneNumber, email, parkingSpaceId);
+                    // Generate a temporary ID or retrieve it from a database
+                    int tempId = users.size() + 1; // Example ID generation
 
-                // Create a new Customer object
-                Customer newCustomer = new Customer(name, phoneNumber, email);
-                // Add to local list (optional, if you need it for display)
-                users.add(newUser);
+                    // Create new User object
+                    User newUser = new User(tempId, name, phoneNumber, email, parkingSpaceId);
 
-                // Add to SQL database
-                CustomerController.addCustomerToDB(newCustomer, newUser);
+                    // Create a new Customer object
+                    Customer newCustomer = new Customer(name, phoneNumber, email);
 
+                    // Use CustomerController through the CustomerService interface
+                    CustomerService customerService = new CustomerController();
 
-                // Add to table
-                tableModel.addRow(new Object[]{customerId, name, phoneNumber, email, parkingSpaceId});
+                    // Add the customer to the database
+                    customerService.addCustomerToDB(newCustomer, newUser);
 
-                JOptionPane.showMessageDialog(this, "Customer added successfully: " + name);
-            } catch (NumberFormatException e) {
-                JOptionPane.showMessageDialog(this, "Parking Space ID must be a valid number.", "Input Error", JOptionPane.ERROR_MESSAGE);
+                    // Add customer details to the table (GUI update)
+                    tableModel.addRow(new Object[]{tempId, name, phoneNumber, email, parkingSpaceId});
+
+                    JOptionPane.showMessageDialog(this, "Customer added successfully: " + name);
+                } catch (NumberFormatException e) {
+                    JOptionPane.showMessageDialog(this, "Parking Space ID must be a valid number.", "Input Error", JOptionPane.ERROR_MESSAGE);
+                } catch (Exception e) {
+                    JOptionPane.showMessageDialog(this, "Error adding customer: " + e.getMessage(), "Database Error", JOptionPane.ERROR_MESSAGE);
+                    e.printStackTrace();
+                }
             }
+        } else {
+            System.out.println("Add customer action was canceled.");
         }
-    } else {
-        System.out.println("Add customer action was canceled.");
-    }
-
     }//GEN-LAST:event_btnAddCustomerActionPerformed
 
     private void btnGenerateReportActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGenerateReportActionPerformed
@@ -290,7 +296,8 @@ public class AdminScreen extends javax.swing.JFrame {
                 
                           // Delete the customer associated with the parking space
                         System.out.println("Attempting to delete customer associated with Parking Space ID: " + spaceId);
-                        CustomerController.deleteCustomerByParkingSpaceId(spaceId);
+                        CustomerService customerService= new CustomerController();
+                                customerService.deleteCustomerByParkingSpaceId(spaceId);
 
                 // Remove the corresponding row from the JTable
                 DefaultTableModel tableModel = (DefaultTableModel) jTable1.getModel();
@@ -363,14 +370,25 @@ public class AdminScreen extends javax.swing.JFrame {
             System.out.println("Viewing attendant information...");
         }
     }//GEN-LAST:event_btnViewAttendantInfoActionPerformed
-
+  
     private void btnSendNotificationActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSendNotificationActionPerformed
-         String message = JOptionPane.showInputDialog(this, "Enter the notification message:", "Send Notification", JOptionPane.PLAIN_MESSAGE);
-        if (message != null && !message.trim().isEmpty()) {
-            System.out.println("Sending notification: " + message);
-        } else if (message != null) {
-            JOptionPane.showMessageDialog(this, "Notification message cannot be empty.", "Input Error", JOptionPane.ERROR_MESSAGE);
-        }
+      // Lấy thông báo từ người dùng
+    String message = JOptionPane.showInputDialog(this, "Enter the notification message:", "Send Notification", JOptionPane.PLAIN_MESSAGE);
+    
+    if (message != null && !message.trim().isEmpty()) {
+        // Tạo đối tượng CustomerController
+        CustomerController customerController = new CustomerController();
+
+        // Gọi phương thức để gửi thông báo tới tất cả khách hàng
+        customerController.sendNotificationToAllCustomers(message);
+        
+        // Thông báo đã gửi
+        System.out.println("Notification sent to all customers.");
+    } else if (message != null) {
+        // Nếu message không hợp lệ (rỗng)
+        JOptionPane.showMessageDialog(this, "Notification message cannot be empty.", "Input Error", JOptionPane.ERROR_MESSAGE);
+    }
+
     }//GEN-LAST:event_btnSendNotificationActionPerformed
 
     private void btnExitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnExitActionPerformed

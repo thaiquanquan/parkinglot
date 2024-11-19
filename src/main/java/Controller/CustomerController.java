@@ -2,14 +2,17 @@ package Controller;
 
 import parkinglot.core.Customer;
 import parkinglot.core.User;
+import parkinglot.service.EmailService;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-public class CustomerController {
+public class CustomerController implements CustomerService {
 
-    // Add a new customer
-    public static void addCustomer(Customer customer) {
+    // Các phương thức của CustomerController như addCustomer, updateCustomer, v.v...
+
+    @Override
+    public void addCustomer(Customer customer) {
         String query = "INSERT INTO customer (customer_name, phone_number, email) VALUES ('"
                 + customer.getName() + "', '"
                 + customer.getPhoneNumber() + "', '"
@@ -18,8 +21,8 @@ public class CustomerController {
         dbops.executeUpdate(query, "Added new customer: " + customer.getName());
     }
 
-    // Update an existing customer
-    public static void updateCustomer(Customer customer) {
+    @Override
+    public void updateCustomer(Customer customer) {
         String query = "UPDATE customer SET customer_name = '"
                 + customer.getName() + "', phone_number = '"
                 + customer.getPhoneNumber() + "', email = '"
@@ -29,9 +32,10 @@ public class CustomerController {
         dbops.executeUpdate(query, "Updated customer: " + customer.getName());
     }
 
-        public static void deleteCustomerByParkingSpaceId(int parkingSpaceId) {
+    @Override
+    public void deleteCustomerByParkingSpaceId(int parkingSpaceId) {
         String query = "DELETE FROM customer WHERE parking_space_id = " + parkingSpaceId;
-        System.out.println("Executing query: " + query); // Log the query for debugging
+        System.out.println("Executing query: " + query);
 
         try {
             int rowsAffected = dbops.executeUpdate(query, "Deleted customer associated with Parking Space ID: " + parkingSpaceId);
@@ -46,8 +50,8 @@ public class CustomerController {
         }
     }
 
-    // Retrieve a single customer by ID
-    public static Customer getCustomerById(int customerId) {
+    @Override
+    public Customer getCustomerById(int customerId) {
         String query = "SELECT * FROM customer WHERE customer_id = " + customerId;
         ResultSet rs = dbops.selectQuery(query);
         
@@ -65,29 +69,46 @@ public class CustomerController {
         }
         return null;
     }
+@Override
+public ArrayList<Customer> getAllCustomers() {
+    String query = "SELECT * FROM customer";
+    ResultSet rs = null;
+    ArrayList<Customer> customers = new ArrayList<>();
 
-    // Retrieve all customers
-    public static ArrayList<Customer> getAllCustomers() {
-        String query = "SELECT * FROM customer";
-        ResultSet rs = dbops.selectQuery(query);
-        ArrayList<Customer> customers = new ArrayList<>();
+    try {
+        // Giả sử dbops.selectQuery trả về kết quả ResultSet
+        rs = dbops.selectQuery(query);
         
+        // Lặp qua kết quả và lấy thông tin khách hàng
+        while (rs.next()) {
+            Customer customer = new Customer(
+                rs.getInt("customer_id"),
+                rs.getString("customer_name"),
+                rs.getString("phone_number"),
+                rs.getString("email")
+            );
+            customers.add(customer);
+            System.out.println("Email to send: " + customer.getEmail()); // In ra email để kiểm tra
+        }
+    } catch (SQLException e) {
+        e.printStackTrace();
+    } finally {
+        // Đảm bảo đóng ResultSet và Connection sau khi sử dụng
         try {
-            while (rs.next()) {
-                customers.add(new Customer(
-                    rs.getInt("customer_id"),
-                    rs.getString("customer_name"),
-                    rs.getString("phone_number"),
-                    rs.getString("email")
-                ));
+            if (rs != null) {
+                rs.close();
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return customers;
     }
-    
-    public static void addCustomerToDB(Customer customer, User user) {
+
+    return customers;
+}
+
+
+    @Override
+    public void addCustomerToDB(Customer customer, User user) {
         String query = "INSERT INTO customer (customer_name, phone_number, email, parking_space_id) VALUES ('"
                 + customer.getName() + "', '"
                 + customer.getPhoneNumber() + "', '"
@@ -96,15 +117,16 @@ public class CustomerController {
 
         dbops.executeUpdate(query, "Added new customer: " + customer.getName());
     }
-    
-    public static int getCustomerByParkingSpace(int parkingSpaceId) {
+
+    @Override
+    public int getCustomerByParkingSpace(int parkingSpaceId) {
         String query = "SELECT customer_id FROM customer WHERE parking_space_id = " + parkingSpaceId;
-        System.out.println("Executing query: " + query); // Log query for debugging
+        System.out.println("Executing query: " + query);
         ResultSet rs = dbops.selectQuery(query);
         try {
             if (rs != null && rs.next()) {
                 int customerId = rs.getInt("customer_id");
-                System.out.println("Found customer ID: " + customerId); // Log found ID
+                System.out.println("Found customer ID: " + customerId);
                 return customerId;
             } else {
                 System.out.println("No customer found for parking space ID: " + parkingSpaceId);
@@ -114,4 +136,23 @@ public class CustomerController {
         }
         return -1; // Return -1 if no customer is found
     }
-}
+
+      @Override
+    public void sendNotificationToAllCustomers(String message) {
+        // Lấy tất cả khách hàng từ cơ sở dữ liệu
+        ArrayList<Customer> customers = getAllCustomers();
+
+        // Tạo đối tượng EmailService để gửi email
+        EmailService emailService = new EmailService();
+
+        // Gửi email thông báo đến mỗi khách hàng
+        for (Customer customer : customers) {
+            emailService.sendEmail(customer.getEmail(), "Customer Notification", message);
+        }
+
+        System.out.println("Notification sent to all customers.");
+    }
+
+    }
+    
+
