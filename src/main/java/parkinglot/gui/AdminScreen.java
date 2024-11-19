@@ -15,6 +15,8 @@ import parkinglot.transaction.Transaction;
 import parkinglot.core.ParkingLot;
 import parkinglot.core.User;
 import javax.swing.table.DefaultTableModel;
+import parkinglot.core.Customer;
+import Controller.CustomerController;
 
 /**
  *
@@ -185,13 +187,13 @@ public class AdminScreen extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
     
     private void btnAddCustomerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddCustomerActionPerformed
-     JPanel panel = new JPanel();
+    JPanel panel = new JPanel();
     panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-
+    
     JTextField txtName = new JTextField(15);
     JTextField txtPhoneNumber = new JTextField(15);
     JTextField txtEmail = new JTextField(15);
-    JTextField txtParkingSpaceId = new JTextField(15); // Thêm trường ID chỗ đỗ
+    JTextField txtParkingSpaceId = new JTextField(15); // Parking Space ID
 
     panel.add(new JLabel("Customer Name:"));
     panel.add(txtName);
@@ -205,7 +207,7 @@ public class AdminScreen extends javax.swing.JFrame {
     panel.add(txtEmail);
     panel.add(Box.createVerticalStrut(10));
 
-    panel.add(new JLabel("Parking Space ID:")); // Thêm nhãn cho ID chỗ đỗ
+    panel.add(new JLabel("Parking Space ID:"));
     panel.add(txtParkingSpaceId);
 
     int result = JOptionPane.showConfirmDialog(this, panel, "Add New Customer", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
@@ -220,15 +222,24 @@ public class AdminScreen extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, "Please fill all fields before adding the customer.", "Input Error", JOptionPane.ERROR_MESSAGE);
         } else {
             try {
-                int parkingSpaceId = Integer.parseInt(parkingSpaceIdStr); // Chuyển đổi ID chỗ đỗ sang số nguyên
+                int parkingSpaceId = Integer.parseInt(parkingSpaceIdStr); // Convert Parking Space ID to int
 
-                // Giả sử Customer ID được tạo tự động
+                // Assume Customer ID is generated automatically
                 int customerId = users.size() + 1;
 
-                User newUser = new User(customerId, name, phoneNumber, email, parkingSpaceId);
+                // Create new User object
+		User newUser = new User(customerId, name, phoneNumber, email, parkingSpaceId);
+
+                // Create a new Customer object
+                Customer newCustomer = new Customer(name, phoneNumber, email);
+                // Add to local list (optional, if you need it for display)
                 users.add(newUser);
 
-                // Thêm thông tin khách hàng vào bảng
+                // Add to SQL database
+                CustomerController.addCustomerToDB(newCustomer, newUser);
+
+
+                // Add to table
                 tableModel.addRow(new Object[]{customerId, name, phoneNumber, email, parkingSpaceId});
 
                 JOptionPane.showMessageDialog(this, "Customer added successfully: " + name);
@@ -239,6 +250,7 @@ public class AdminScreen extends javax.swing.JFrame {
     } else {
         System.out.println("Add customer action was canceled.");
     }
+
     }//GEN-LAST:event_btnAddCustomerActionPerformed
 
     private void btnGenerateReportActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGenerateReportActionPerformed
@@ -275,6 +287,10 @@ public class AdminScreen extends javax.swing.JFrame {
             // Attempt to release the parking space
             if (parkingLot.releaseSpace(spaceId)) { // Check if the parking spot is released
                 JOptionPane.showMessageDialog(this, "Parking spot " + spaceId + " released successfully.");
+                
+                          // Delete the customer associated with the parking space
+                        System.out.println("Attempting to delete customer associated with Parking Space ID: " + spaceId);
+                        CustomerController.deleteCustomerByParkingSpaceId(spaceId);
 
                 // Remove the corresponding row from the JTable
                 DefaultTableModel tableModel = (DefaultTableModel) jTable1.getModel();
